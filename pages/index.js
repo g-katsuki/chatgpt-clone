@@ -51,7 +51,8 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="flex flex-col items-center w-full max-w-lg ">
           <div
-            className="mt-2 p-4 bg-gray-100 w-full h-80 overflow-scroll"
+            style={{ height: "470px" }}
+            className="mt-1 p-4 bg-gray-100 w-full h-80 overflow-scroll"
           >
             <span className="text-center block font-medium text-2xl border-b-2 border-indigo-400 pb-4 mb-3">
               ChatGPT
@@ -75,7 +76,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <form onSubmit={handleSubmit} className="w-full mb-2">
+          <form onSubmit={handleSubmit} className="w-full mb-1">
             <div className="flex items-center p-2 bg-gray-100 w-full">
               <input
                 type="text"
