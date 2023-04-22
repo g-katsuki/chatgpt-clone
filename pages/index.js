@@ -1,8 +1,44 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import { useState } from "react";
+import { IoSend } from "react-icons/io5";
+import BeatLoader from "react-spinners/BeatLoader";
+import openai from "openai";
+import { Configuration, OpenAIApi } from "openai";
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const configuration = new Configuration({
+    apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  });
+
+  const openai = new OpenAIApi(configuration);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+    if (!message) return;
+
+    setIsLoading(true);
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      // prompt: message,
+      messages: [{ role: "user", content: message }],
+      // max_tokens: 256,
+    });
+    setIsLoading(false);
+
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { sender: "user", text: message },
+      { sender: "bot", text: response.data.choices[0].message?.content },
+    ]);
+
+    setMessage("");
+  }
   return (
     <div className={styles.container}>
       <Head>
@@ -11,59 +47,57 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
+      <div className="flex flex-col items-center justify-center h-screen">
+        <div className="flex flex-col items-center w-full max-w-lg ">
+          <div
+            style={{ height: "650px" }}
+            className="p-4 bg-gray-100 rounded-t-lg w-full h-96 overflow-scroll"
           >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+            <span className="text-center block font-medium text-2xl border-b-2 border-indigo-400 pb-4 mb-3">
+              ChatGPT Clone
+            </span>
+            {messages.map((message, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  message.sender === "user" ? "justify-end" : "justify-start"
+                } mb-2`}
+              >
+                <div
+                  className={`p-2 rounded-lg ${
+                    message.sender === "user"
+                      ? "bg-indigo-400 text-white"
+                      : "bg-gray-200"
+                  }`}
+                >
+                  {message.text}
+                </div>
+              </div>
+            ))}
+          </div>
+          <form onSubmit={handleSubmit} className="w-full">
+            <div className="flex items-center p-4 bg-gray-100 rounded-b-lg w-full">
+              <input
+                type="text"
+                value={message}
+                onChange={(event) => setMessage(event.target.value)}
+                className="flex-1 mr-2 py-2 px-4 rounded-lg border-2 border-gray-200 focus:outline-none focus:border-indigo-400"
+                placeholder="メッセージを入力"
+              />
+              <button
+                type="submit"
+                className="flex items-center justify-center p-2 rounded-lg bg-indigo-400 text-white hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500"
+              >
+                {isLoading ? (
+                  <BeatLoader size={8} color="white" />
+                ) : (
+                  <IoSend size={20} />
+                )}
+              </button>
+            </div>
+          </form>
         </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      </div>
     </div>
-  )
+  );
 }
