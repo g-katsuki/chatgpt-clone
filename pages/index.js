@@ -50,11 +50,11 @@ export default function Home() {
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="flex flex-col items-center w-full max-w-lg ">
           <div
-            style={{ height: "650px" }}
-            className="p-4 bg-gray-100 rounded-t-lg w-full h-96 overflow-scroll"
+            style={{ height: "560px" }}
+            className="p-4 bg-gray-100 w-full h-96 overflow-scroll"
           >
             <span className="text-center block font-medium text-2xl border-b-2 border-indigo-400 pb-4 mb-3">
-              ChatGPT Clone
+              ChatGPT
             </span>
             {messages.map((message, index) => (
               <div
@@ -76,7 +76,7 @@ export default function Home() {
             ))}
           </div>
           <form onSubmit={handleSubmit} className="w-full">
-            <div className="flex items-center p-4 bg-gray-100 rounded-b-lg w-full">
+            <div className="flex items-center p-4 bg-gray-100 w-full">
               <input
                 type="text"
                 value={message}
